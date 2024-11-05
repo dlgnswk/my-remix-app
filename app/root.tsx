@@ -1,10 +1,15 @@
 import { Links, Meta, Outlet, Scripts, useLoaderData } from "@remix-run/react";
 import { json } from "@remix-run/node";
+import React from "react";
+
+interface dataProps {
+  message: string;
+}
 
 export async function loader() {
   try {
     const response = await fetch("http://127.0.0.1:8000/api/hello");
-    const data = await response.json();
+    const data: dataProps = await response.json();
 
     return json(data);
   } catch (error) {
@@ -15,7 +20,7 @@ export async function loader() {
 }
 
 export default function App() {
-  const data = useLoaderData();
+  const data: dataProps = useLoaderData();
 
   return (
     <html>
