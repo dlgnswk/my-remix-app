@@ -1,6 +1,6 @@
 import { Links, Meta, Outlet, Scripts, useLoaderData } from "@remix-run/react";
 import { json } from "@remix-run/node";
-import React from "react";
+import "./styles/globals.css";
 
 interface dataProps {
   message: string;

@@ -1,6 +1,5 @@
-import React from "react";
-
 import { json, useLoaderData } from "@remix-run/react";
+import { Button } from "../components/ui/button";
 
 interface dataProps {
   message: string;
@@ -25,6 +24,7 @@ export default function Home() {
   return (
     <div>
       <span>{data.message}</span>
+      <Button>Click</Button>
     </div>
   );
 }
