@@ -1,7 +1,7 @@
 import { jsx, jsxs } from "react/jsx-runtime";
 import { PassThrough } from "node:stream";
-import { createReadableStreamFromReadable } from "@remix-run/node";
-import { RemixServer, Meta, Links, Outlet, Scripts } from "@remix-run/react";
+import { createReadableStreamFromReadable, json } from "@remix-run/node";
+import { RemixServer, useLoaderData, Meta, Links, Outlet, Scripts } from "@remix-run/react";
 import * as isbotModule from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
 const ABORT_DELAY = 5e3;
@@ -115,7 +115,18 @@ const entryServer = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineP
   __proto__: null,
   default: handleRequest
 }, Symbol.toStringTag, { value: "Module" }));
+async function loader() {
+  try {
+    const response = await fetch("http://127.0.0.1:8000/api/hello");
+    const data = await response.json();
+    return json(data);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return json({ message: "Error fetching data" }, { status: 500 });
+  }
+}
 function App() {
+  const data = useLoaderData();
   return /* @__PURE__ */ jsxs("html", { children: [
     /* @__PURE__ */ jsxs("head", { children: [
       /* @__PURE__ */ jsx("link", { rel: "icon", href: "data:image/x-icon;base64,AA" }),
@@ -123,7 +134,7 @@ function App() {
       /* @__PURE__ */ jsx(Links, {})
     ] }),
     /* @__PURE__ */ jsxs("body", { children: [
-      /* @__PURE__ */ jsx("h1", { children: "Hello world!" }),
+      /* @__PURE__ */ jsx("h1", { children: data.message }),
       /* @__PURE__ */ jsx(Outlet, {}),
       /* @__PURE__ */ jsx(Scripts, {})
     ] })
@@ -131,9 +142,10 @@ function App() {
 }
 const route0 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  default: App
+  default: App,
+  loader
 }, Symbol.toStringTag, { value: "Module" }));
-const serverManifest = { "entry": { "module": "/assets/entry.client-32psT9kM.js", "imports": ["/assets/components-CG1rVBqy.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/root-CYUzrM1V.js", "imports": ["/assets/components-CG1rVBqy.js"], "css": [] } }, "url": "/assets/manifest-23455671.js", "version": "23455671" };
+const serverManifest = { "entry": { "module": "/assets/entry.client-a6YI6rl8.js", "imports": ["/assets/components-B97Wnn21.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/root-C2gIRsJb.js", "imports": ["/assets/components-B97Wnn21.js"], "css": [] } }, "url": "/assets/manifest-47888e67.js", "version": "47888e67" };
 const mode = "production";
 const assetsBuildDirectory = "build/client";
 const basename = "/";
