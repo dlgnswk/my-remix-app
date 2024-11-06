@@ -8,6 +8,8 @@ import {
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 
+import { handleFileChange } from "~/utils/handleFileChange";
+
 export default function FileImportCard() {
   return (
     <Card className="w-[380px] text-left m-auto">
@@ -19,7 +21,7 @@ export default function FileImportCard() {
       </CardHeader>
       <CardContent>
         <Label htmlFor="dwg">.dwg file</Label>
-        <Input id="dwg" type="file" />
+        <Input id="dwg" type="file" accept=".dwg" onChange={handleFileChange} />
       </CardContent>
     </Card>
   );
