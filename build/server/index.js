@@ -5,11 +5,10 @@ import { RemixServer, Meta, Links, Outlet, Scripts, useLoaderData } from "@remix
 import * as isbotModule from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
 import * as React from "react";
-import { Slot } from "@radix-ui/react-slot";
-import { cva } from "class-variance-authority";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import * as LabelPrimitive from "@radix-ui/react-label";
+import { cva } from "class-variance-authority";
 const ABORT_DELAY = 5e3;
 function handleRequest(request, responseStatusCode, responseHeaders, remixContext, loadContext) {
   let prohibitOutOfOrderStreaming = isBotRequest(request.headers.get("user-agent")) || remixContext.isSpaMode;
@@ -128,7 +127,7 @@ function App() {
       /* @__PURE__ */ jsx(Meta, {}),
       /* @__PURE__ */ jsx(Links, {})
     ] }),
-    /* @__PURE__ */ jsxs("body", { children: [
+    /* @__PURE__ */ jsxs("body", { className: "min-h-screen bg-background font-sans antialiased __variable_ac79ff", children: [
       /* @__PURE__ */ jsx(Outlet, {}),
       /* @__PURE__ */ jsx(Scripts, {})
     ] })
@@ -141,45 +140,56 @@ const route0 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
 function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
-const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+const Card = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
+  "div",
   {
-    variants: {
-      variant: {
-        default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-        destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
-        outline: "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
-        secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline"
-      },
-      size: {
-        default: "h-9 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-md px-8",
-        icon: "h-9 w-9"
-      }
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default"
-    }
+    ref,
+    className: cn(
+      "rounded-xl border bg-card text-card-foreground shadow",
+      className
+    ),
+    ...props
   }
-);
-const Button = React.forwardRef(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button";
-    return /* @__PURE__ */ jsx(
-      Comp,
-      {
-        className: cn(buttonVariants({ variant, size, className })),
-        ref,
-        ...props
-      }
-    );
+));
+Card.displayName = "Card";
+const CardHeader = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
+  "div",
+  {
+    ref,
+    className: cn("flex flex-col space-y-1.5 p-6", className),
+    ...props
   }
-);
-Button.displayName = "Button";
+));
+CardHeader.displayName = "CardHeader";
+const CardTitle = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
+  "div",
+  {
+    ref,
+    className: cn("font-semibold leading-none tracking-tight", className),
+    ...props
+  }
+));
+CardTitle.displayName = "CardTitle";
+const CardDescription = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
+  "div",
+  {
+    ref,
+    className: cn("text-sm text-muted-foreground", className),
+    ...props
+  }
+));
+CardDescription.displayName = "CardDescription";
+const CardContent = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx("div", { ref, className: cn("p-6 pt-0", className), ...props }));
+CardContent.displayName = "CardContent";
+const CardFooter = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
+  "div",
+  {
+    ref,
+    className: cn("flex items-center p-6 pt-0", className),
+    ...props
+  }
+));
+CardFooter.displayName = "CardFooter";
 const Input = React.forwardRef(
   ({ className, type, ...props }, ref) => {
     return /* @__PURE__ */ jsx(
@@ -209,25 +219,24 @@ const Label = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */
   }
 ));
 Label.displayName = LabelPrimitive.Root.displayName;
-async function loader$1() {
-  const byeResponse = await fetch("http://127.0.0.1:8000/api/bye");
-  const byeData = await byeResponse.json();
-  return json({ message: byeData.message });
-}
-function Index() {
-  const { message } = useLoaderData();
-  return /* @__PURE__ */ jsxs("div", { children: [
-    /* @__PURE__ */ jsxs("div", { className: "grid w-full max-w-sm items-center gap-1.5", children: [
+function FileImportCard() {
+  return /* @__PURE__ */ jsxs(Card, { className: "w-[380px] text-left m-auto", children: [
+    /* @__PURE__ */ jsxs(CardHeader, { children: [
+      /* @__PURE__ */ jsx(CardTitle, { children: "DWG to DXF Converter" }),
+      /* @__PURE__ */ jsx(CardDescription, { children: ".dxf 로 변환하고 싶은 .dwg 파일을 불러올 수 있어요." })
+    ] }),
+    /* @__PURE__ */ jsxs(CardContent, { children: [
       /* @__PURE__ */ jsx(Label, { htmlFor: "dwg", children: ".dwg file" }),
       /* @__PURE__ */ jsx(Input, { id: "dwg", type: "file" })
-    ] }),
-    /* @__PURE__ */ jsx(Button, { children: message })
+    ] })
   ] });
+}
+function Index() {
+  return /* @__PURE__ */ jsx(FileImportCard, {});
 }
 const route1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  default: Index,
-  loader: loader$1
+  default: Index
 }, Symbol.toStringTag, { value: "Module" }));
 function Header({ message }) {
   return /* @__PURE__ */ jsx("h1", { children: message });
@@ -249,7 +258,7 @@ const route2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   default: Layout,
   loader
 }, Symbol.toStringTag, { value: "Module" }));
-const serverManifest = { "entry": { "module": "/assets/entry.client-a6YI6rl8.js", "imports": ["/assets/components-B97Wnn21.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/root-6UHg-R7a.js", "imports": ["/assets/components-B97Wnn21.js"], "css": ["/assets/root-BrLs7QWM.css"] }, "routes/_layout._index": { "id": "routes/_layout._index", "parentId": "routes/_layout", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/_layout._index-C2rUgBys.js", "imports": ["/assets/components-B97Wnn21.js"], "css": [] }, "routes/_layout": { "id": "routes/_layout", "parentId": "root", "path": void 0, "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/_layout-Cf1E47gP.js", "imports": ["/assets/components-B97Wnn21.js"], "css": [] } }, "url": "/assets/manifest-c3f985f2.js", "version": "c3f985f2" };
+const serverManifest = { "entry": { "module": "/assets/entry.client-1VZehoPI.js", "imports": ["/assets/index-D5DUBlz2.js", "/assets/components-SXKVdUX6.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/root-BZohJYYu.js", "imports": ["/assets/index-D5DUBlz2.js", "/assets/components-SXKVdUX6.js"], "css": ["/assets/root-Cn_9HG3G.css"] }, "routes/_layout._index": { "id": "routes/_layout._index", "parentId": "routes/_layout", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/_layout._index-6lv7ApBg.js", "imports": ["/assets/index-D5DUBlz2.js"], "css": [] }, "routes/_layout": { "id": "routes/_layout", "parentId": "root", "path": void 0, "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/_layout-RvF6heHN.js", "imports": ["/assets/index-D5DUBlz2.js", "/assets/components-SXKVdUX6.js"], "css": [] } }, "url": "/assets/manifest-161b99b3.js", "version": "161b99b3" };
 const mode = "production";
 const assetsBuildDirectory = "build/client";
 const basename = "/";
