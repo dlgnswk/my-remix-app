@@ -1,15 +1,12 @@
 import { json, useLoaderData } from "@remix-run/react";
 
-import Header from "./Header";
-import { Button } from "~/components/ui/button";
-
 interface DataProps {
   message: string;
 }
 
 export async function loader() {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/bye");
+    const response = await fetch("http://127.0.0.1:8000/api/hello");
     const data: DataProps = await response.json();
 
     return json(data);
@@ -20,14 +17,8 @@ export async function loader() {
   }
 }
 
-export default function Home() {
+export default function Index() {
   const data: DataProps = useLoaderData();
 
-  return (
-    <div>
-      <Header />
-      <span>{data.message}</span>
-      <Button>Click</Button>
-    </div>
-  );
+  return <h1>{data.message}</h1>;
 }
