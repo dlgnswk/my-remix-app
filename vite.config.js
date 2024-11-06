@@ -6,7 +6,7 @@ export default defineConfig({
     remix({
       routes(defineRoutes) {
         return defineRoutes((route) => {
-          route("/", "home/route.tsx");
+          route("/", "routes/home.tsx");
         });
       },
     }),

@@ -1,10 +1,14 @@
 import { Links, Meta, Outlet, Scripts, useLoaderData } from "@remix-run/react";
 import { json } from "@remix-run/node";
+
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
 import "./styles/globals.css";
 
 interface dataProps {
   message: string;
 }
+const queryClient = new QueryClient();
 
 export async function loader() {
   try {
@@ -31,7 +35,9 @@ export default function App() {
       </head>
       <body>
         <h1>{data.message}</h1>
-        <Outlet />
+        <QueryClientProvider client={queryClient}>
+          <Outlet />
+        </QueryClientProvider>
         <Scripts />
       </body>
     </html>

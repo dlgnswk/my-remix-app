@@ -1,1 +1,0 @@
-import{o as e,n as s,M as t,L as n,O as r,S as i}from"./components-B97Wnn21.js";function o(){const a=e();return s.jsxs("html",{children:[s.jsxs("head",{children:[s.jsx("link",{rel:"icon",href:"data:image/x-icon;base64,AA"}),s.jsx(t,{}),s.jsx(n,{})]}),s.jsxs("body",{children:[s.jsx("h1",{children:a.message}),s.jsx(r,{}),s.jsx(i,{})]})]})}export{o as default};

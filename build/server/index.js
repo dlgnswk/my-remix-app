@@ -4,6 +4,7 @@ import { createReadableStreamFromReadable, json } from "@remix-run/node";
 import { RemixServer, useLoaderData, Meta, Links, Outlet, Scripts, json as json$1 } from "@remix-run/react";
 import * as isbotModule from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
+import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
@@ -120,6 +121,7 @@ const entryServer = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineP
   __proto__: null,
   default: handleRequest
 }, Symbol.toStringTag, { value: "Module" }));
+const queryClient = new QueryClient();
 async function loader$1() {
   try {
     const response = await fetch("http://127.0.0.1:8000/api/hello");
@@ -140,7 +142,7 @@ function App() {
     ] }),
     /* @__PURE__ */ jsxs("body", { children: [
       /* @__PURE__ */ jsx("h1", { children: data.message }),
-      /* @__PURE__ */ jsx(Outlet, {}),
+      /* @__PURE__ */ jsx(QueryClientProvider, { client: queryClient, children: /* @__PURE__ */ jsx(Outlet, {}) }),
       /* @__PURE__ */ jsx(Scripts, {})
     ] })
   ] });
@@ -149,6 +151,22 @@ const route0 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   __proto__: null,
   default: App,
   loader: loader$1
+}, Symbol.toStringTag, { value: "Module" }));
+function Index() {
+  const initialData = useLoaderData();
+  const { data } = useQuery({
+    queryKey: ["hello"],
+    queryFn: async () => {
+      const response = await fetch("http://127.0.0.1:8000/api/hello");
+      return response.json();
+    },
+    initialData
+  });
+  return /* @__PURE__ */ jsx("h1", { children: data.message });
+}
+const route1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Index
 }, Symbol.toStringTag, { value: "Module" }));
 function cn(...inputs) {
   return twMerge(clsx(inputs));
@@ -209,12 +227,12 @@ function Home() {
     /* @__PURE__ */ jsx(Button, { children: "Click" })
   ] });
 }
-const route1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Home,
   loader
 }, Symbol.toStringTag, { value: "Module" }));
-const serverManifest = { "entry": { "module": "/assets/entry.client-a6YI6rl8.js", "imports": ["/assets/components-B97Wnn21.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/root-SE2fOVwu.js", "imports": ["/assets/components-B97Wnn21.js"], "css": ["/assets/root-9kGrK34Z.css"] }, "home/route": { "id": "home/route", "parentId": "root", "path": "/", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/route-CdDajQfK.js", "imports": ["/assets/components-B97Wnn21.js"], "css": [] } }, "url": "/assets/manifest-cef431d7.js", "version": "cef431d7" };
+const serverManifest = { "entry": { "module": "/assets/entry.client-a6YI6rl8.js", "imports": ["/assets/components-B97Wnn21.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/root-CSNQqZyp.js", "imports": ["/assets/components-B97Wnn21.js", "/assets/QueryClientProvider-5dxHdJqT.js"], "css": ["/assets/root-9kGrK34Z.css"] }, "routes/index": { "id": "routes/index", "parentId": "root", "path": "index", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/index-D0kh-8QK.js", "imports": ["/assets/components-B97Wnn21.js", "/assets/QueryClientProvider-5dxHdJqT.js"], "css": [] }, "routes/home": { "id": "routes/home", "parentId": "root", "path": "/", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/home-CdDajQfK.js", "imports": ["/assets/components-B97Wnn21.js"], "css": [] } }, "url": "/assets/manifest-c4f17be2.js", "version": "c4f17be2" };
 const mode = "production";
 const assetsBuildDirectory = "build/client";
 const basename = "/";
@@ -231,13 +249,21 @@ const routes = {
     caseSensitive: void 0,
     module: route0
   },
-  "home/route": {
-    id: "home/route",
+  "routes/index": {
+    id: "routes/index",
+    parentId: "root",
+    path: "index",
+    index: void 0,
+    caseSensitive: void 0,
+    module: route1
+  },
+  "routes/home": {
+    id: "routes/home",
     parentId: "root",
     path: "/",
     index: void 0,
     caseSensitive: void 0,
-    module: route1
+    module: route2
   }
 };
 export {
