@@ -9,7 +9,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="min-h-screen bg-background font-sans antialiased __variable_ac79ff">
         <Outlet />
         <Scripts />
       </body>
