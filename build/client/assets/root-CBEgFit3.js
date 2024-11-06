@@ -1,1 +1,0 @@
-import{j as s,M as e,L as a,O as t,S as i}from"./components-CL6E8reK.js";function x(){return s.jsxs("html",{children:[s.jsxs("head",{children:[s.jsx("link",{rel:"icon",href:"data:image/x-icon;base64,AA"}),s.jsx(e,{}),s.jsx(a,{})]}),s.jsxs("body",{children:[s.jsx(t,{}),s.jsx(i,{})]})]})}export{x as default};

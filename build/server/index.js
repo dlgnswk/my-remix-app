@@ -1,7 +1,7 @@
 import { jsx, jsxs } from "react/jsx-runtime";
 import { PassThrough } from "node:stream";
-import { createReadableStreamFromReadable } from "@remix-run/node";
-import { RemixServer, Meta, Links, Outlet, Scripts, useLoaderData, json } from "@remix-run/react";
+import { createReadableStreamFromReadable, json } from "@remix-run/node";
+import { RemixServer, Meta, Links, Outlet, Scripts, useLoaderData } from "@remix-run/react";
 import * as isbotModule from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
 import * as React from "react";
@@ -9,6 +9,7 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import * as LabelPrimitive from "@radix-ui/react-label";
 const ABORT_DELAY = 5e3;
 function handleRequest(request, responseStatusCode, responseHeaders, remixContext, loadContext) {
   let prohibitOutOfOrderStreaming = isBotRequest(request.headers.get("user-agent")) || remixContext.isSpaMode;
@@ -137,25 +138,6 @@ const route0 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   __proto__: null,
   default: App
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$1() {
-  try {
-    const response = await fetch("http://127.0.0.1:8000/api/hello");
-    const data = await response.json();
-    return json(data);
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    return json({ message: "Error fetching data" }, { status: 500 });
-  }
-}
-function Index() {
-  const data = useLoaderData();
-  return /* @__PURE__ */ jsx("h1", { children: data.message });
-}
-const route1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  default: Index,
-  loader: loader$1
-}, Symbol.toStringTag, { value: "Module" }));
 function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
@@ -198,30 +180,76 @@ const Button = React.forwardRef(
   }
 );
 Button.displayName = "Button";
-async function loader() {
-  try {
-    const response = await fetch("http://127.0.0.1:8000/api/bye");
-    const data = await response.json();
-    return json(data);
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    return json({ message: "Error fetching data" }, { status: 500 });
+const Input = React.forwardRef(
+  ({ className, type, ...props }, ref) => {
+    return /* @__PURE__ */ jsx(
+      "input",
+      {
+        type,
+        className: cn(
+          "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+          className
+        ),
+        ref,
+        ...props
+      }
+    );
   }
+);
+Input.displayName = "Input";
+const labelVariants = cva(
+  "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+);
+const Label = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
+  LabelPrimitive.Root,
+  {
+    ref,
+    className: cn(labelVariants(), className),
+    ...props
+  }
+));
+Label.displayName = LabelPrimitive.Root.displayName;
+async function loader$1() {
+  const byeResponse = await fetch("http://127.0.0.1:8000/api/bye");
+  const byeData = await byeResponse.json();
+  return json({ message: byeData.message });
 }
-function Home() {
-  const data = useLoaderData();
+function Index() {
+  const { message } = useLoaderData();
   return /* @__PURE__ */ jsxs("div", { children: [
-    /* @__PURE__ */ jsx(Index, {}),
-    /* @__PURE__ */ jsx("span", { children: data.message }),
-    /* @__PURE__ */ jsx(Button, { children: "Click" })
+    /* @__PURE__ */ jsxs("div", { className: "grid w-full max-w-sm items-center gap-1.5", children: [
+      /* @__PURE__ */ jsx(Label, { htmlFor: "dwg", children: ".dwg file" }),
+      /* @__PURE__ */ jsx(Input, { id: "dwg", type: "file" })
+    ] }),
+    /* @__PURE__ */ jsx(Button, { children: message })
+  ] });
+}
+const route1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Index,
+  loader: loader$1
+}, Symbol.toStringTag, { value: "Module" }));
+function Header({ message }) {
+  return /* @__PURE__ */ jsx("h1", { children: message });
+}
+async function loader() {
+  const helloResponse = await fetch("http://127.0.0.1:8000/api/hello");
+  const helloData = await helloResponse.json();
+  return json({ message: helloData.message });
+}
+function Layout() {
+  const { message } = useLoaderData();
+  return /* @__PURE__ */ jsxs("div", { className: "w-full text-center", children: [
+    /* @__PURE__ */ jsx(Header, { message }),
+    /* @__PURE__ */ jsx(Outlet, {})
   ] });
 }
 const route2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  default: Home,
+  default: Layout,
   loader
 }, Symbol.toStringTag, { value: "Module" }));
-const serverManifest = { "entry": { "module": "/assets/entry.client-tlqEYxmv.js", "imports": ["/assets/components-CL6E8reK.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/root-CBEgFit3.js", "imports": ["/assets/components-CL6E8reK.js"], "css": ["/assets/root-9kGrK34Z.css"] }, "routes/Header": { "id": "routes/Header", "parentId": "root", "path": "Header", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/Header-B21vw-E1.js", "imports": ["/assets/components-CL6E8reK.js"], "css": [] }, "routes/Home": { "id": "routes/Home", "parentId": "root", "path": "/", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/Home-CK5UG82T.js", "imports": ["/assets/components-CL6E8reK.js", "/assets/Header-B21vw-E1.js"], "css": [] } }, "url": "/assets/manifest-c1ed6546.js", "version": "c1ed6546" };
+const serverManifest = { "entry": { "module": "/assets/entry.client-a6YI6rl8.js", "imports": ["/assets/components-B97Wnn21.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/root-6UHg-R7a.js", "imports": ["/assets/components-B97Wnn21.js"], "css": ["/assets/root-BrLs7QWM.css"] }, "routes/_layout._index": { "id": "routes/_layout._index", "parentId": "routes/_layout", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/_layout._index-C2rUgBys.js", "imports": ["/assets/components-B97Wnn21.js"], "css": [] }, "routes/_layout": { "id": "routes/_layout", "parentId": "root", "path": void 0, "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/_layout-Cf1E47gP.js", "imports": ["/assets/components-B97Wnn21.js"], "css": [] } }, "url": "/assets/manifest-c3f985f2.js", "version": "c3f985f2" };
 const mode = "production";
 const assetsBuildDirectory = "build/client";
 const basename = "/";
@@ -238,18 +266,18 @@ const routes = {
     caseSensitive: void 0,
     module: route0
   },
-  "routes/Header": {
-    id: "routes/Header",
-    parentId: "root",
-    path: "Header",
-    index: void 0,
+  "routes/_layout._index": {
+    id: "routes/_layout._index",
+    parentId: "routes/_layout",
+    path: void 0,
+    index: true,
     caseSensitive: void 0,
     module: route1
   },
-  "routes/Home": {
-    id: "routes/Home",
+  "routes/_layout": {
+    id: "routes/_layout",
     parentId: "root",
-    path: "/",
+    path: void 0,
     index: void 0,
     caseSensitive: void 0,
     module: route2
