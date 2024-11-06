@@ -18,7 +18,7 @@ export default function Layout() {
   const { message } = useLoaderData<typeof loader>();
 
   return (
-    <div className="w-full text-center">
+    <div className="w-full text-center my-10">
       <Header message={message} />
       <Outlet />
     </div>

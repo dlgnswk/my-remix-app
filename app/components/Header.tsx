@@ -7,10 +7,10 @@ interface HeaderProps {
 
 export default function Header({ message }: HeaderProps) {
   return (
-    <Alert>
+    <Alert className="w-[380px] text-left m-auto mb-5">
       <Terminal className="h-4 w-4" />
       <AlertTitle>잠시만요!</AlertTitle>
-      <AlertDescription>테스트 단계입니다.</AlertDescription>
+      <AlertDescription>{message}</AlertDescription>
     </Alert>
   );
 }
