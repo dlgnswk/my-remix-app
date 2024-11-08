@@ -3,23 +3,20 @@ import { Outlet, useLoaderData } from "@remix-run/react";
 
 import Header from "~/components/Header";
 
-interface HelloData {
-  message: string;
+interface LoaderData {
+  data: string;
 }
 
 export async function loader() {
-  const helloResponse = await fetch("http://127.0.0.1:8000/api/hello");
-  const helloData = await helloResponse.json();
-
-  return json<HelloData>({ message: helloData.message });
+  return json<LoaderData>({ data: "api 요청입니다." });
 }
 
 export default function Layout() {
-  const { message } = useLoaderData<typeof loader>();
+  const { data } = useLoaderData<typeof loader>();
 
   return (
     <div className="w-full text-center my-10">
-      <Header message={message} />
+      <Header message={data} />
       <Outlet />
     </div>
   );
