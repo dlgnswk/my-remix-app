@@ -1,12 +1,10 @@
+import type { ActionFunction } from "@remix-run/node";
 import {
-  ActionFunction,
   json,
   unstable_createFileUploadHandler,
   unstable_parseMultipartFormData,
 } from "@remix-run/node";
-
 import CloudConvert from "cloudconvert";
-
 import { Readable } from "stream";
 import { promises as fs } from "fs";
 
@@ -24,68 +22,136 @@ export const action: ActionFunction = async ({ request }) => {
 
     const uploadedFile = formData.get("file") as any;
 
-    if (!uploadedFile)
+    if (!uploadedFile) {
       return json({ error: "파일 업로드 실패" }, { status: 400 });
+    }
 
-    const cloudConvert = new CloudConvert(
-      import.meta.env.VITE_CLOUDCONVERT_API_KEY
-    );
+    // 파일 이름이 없는 경우 기본값 설정
+    const filename = uploadedFile.filename || `file-${Date.now()}.dwg`;
 
+    console.log("Uploaded file details:", {
+      filename,
+      type: uploadedFile.type,
+      size: uploadedFile.size,
+    });
+
+    const apiKey = process.env.CLOUDCONVERT_API_KEY;
+    if (!apiKey) {
+      throw new Error("CLOUDCONVERT_API_KEY is not set");
+    }
+
+    const cloudConvert = new CloudConvert(apiKey);
+
+    // Job 설정 개선
     const job = await cloudConvert.jobs.create({
       tasks: {
-        "import-file": {
+        "import-my-file": {
           operation: "import/upload",
         },
-        "convert-file": {
+        "convert-my-file": {
           operation: "convert",
-          input: ["import-file"],
-          input_format: "dwg",
+          input: ["import-my-file"],
           output_format: "dxf",
-          engine: "autocad",
+          filename: filename.replace(".dwg", ".dxf"),
         },
-        "export-file": {
+        "export-my-file": {
           operation: "export/url",
-          input: ["convert-file"],
+          input: ["convert-my-file"],
+          inline: false,
+          archive_multiple_files: false,
         },
       },
     });
 
-    if (!job.tasks) throw new Error("No tasks found in job");
-    const uploadTask = job.tasks.find((task) => task.name === "import-file");
-
-    if (!uploadTask) throw new Error("Upload task not found");
+    const uploadTask = job.tasks.find((task) => task.name === "import-my-file");
+    if (!uploadTask) {
+      throw new Error("Upload task not found in job");
+    }
 
     const fileBuffer = await fs.readFile(uploadedFile.filepath);
-    const fileStream = new Readable();
-    fileStream.push(fileBuffer);
-    fileStream.push(null);
+    const fileStream = Readable.from(fileBuffer);
 
-    // 스트림으로 업로드
-    await cloudConvert.tasks.upload(uploadTask, fileStream);
-
-    // 임시 파일 정리
-    await fs.unlink(uploadedFile.filepath);
-
-    const result = await cloudConvert.jobs.wait(job.id);
-
-    const exportTask = result.tasks.find(
-      (task) => task.operation === "export/url"
+    await cloudConvert.tasks.upload(
+      uploadTask,
+      fileStream,
+      filename,
+      fileBuffer.length
     );
+
+    console.log("Waiting for job completion...");
+    const jobResult = await cloudConvert.jobs.wait(job.id);
+
+    console.log("Job Status:", jobResult.status);
+    jobResult.tasks.forEach((task) => {
+      console.log(`Task ${task.name}:`, {
+        status: task.status,
+        message: task.message,
+        result: task.result,
+      });
+    });
+
+    if (jobResult.status === "error") {
+      throw new Error(
+        `Job failed: ${JSON.stringify(
+          jobResult.tasks.map((t) => ({
+            name: t.name,
+            status: t.status,
+            message: t.message,
+          }))
+        )}`
+      );
+    }
+
+    const exportTask = jobResult.tasks.find(
+      (task) => task.operation === "export/url" && task.status === "finished"
+    );
+
     if (!exportTask?.result?.files?.[0]?.url) {
-      throw new Error("Export URL not found");
+      throw new Error(
+        `Export task failed or no URL found: ${JSON.stringify(exportTask)}`
+      );
     }
 
     const fileUrl = exportTask.result.files[0].url;
     const response = await fetch(fileUrl);
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to download converted file: ${response.statusText}`
+      );
+    }
+
     const dxfContent = await response.text();
 
-    return json({ dxfContent });
-  } catch (error) {
-    console.error("Conversion error:", error);
+    await fs.unlink(uploadedFile.filepath);
+
+    return json({
+      success: true,
+      dxfContent,
+      filename: exportTask.result.files[0].filename,
+    });
+  } catch (err: unknown) {
+    const error = err as Error & {
+      response?: {
+        data?: {
+          message?: string;
+          code?: string;
+          errors?: unknown;
+        };
+      };
+    };
+
+    console.error("Conversion error:", {
+      message: error.message,
+      response: error.response?.data,
+      stack: error.stack,
+      fullError: error,
+    });
+
     return json(
       {
-        error:
-          error instanceof Error ? error.message : "Unknown error occurred",
+        error: error.message || "Unknown error occurred",
+        details: error.response?.data,
       },
       { status: 500 }
     );

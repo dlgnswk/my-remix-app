@@ -9,4 +9,9 @@ export default defineConfig({
       "~": resolve(__dirname, "./app"),
     },
   },
+  define: {
+    "process.env.CLOUDCONVERT_API_KEY": JSON.stringify(
+      process.env.CLOUDCONVERT_API_KEY
+    ),
+  },
 });

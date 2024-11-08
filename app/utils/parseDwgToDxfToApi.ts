@@ -13,10 +13,23 @@ export const parseDwgToDxfToApi = async (e: ChangeEvent<HTMLInputElement>) => {
       method: "POST",
       body: formData,
     });
+
     console.log(response);
+
     if (!response.ok) {
       throw new Error("Failed to convert file");
     }
+
+    const responseClone = response.clone();
+    const blob = await responseClone.blob();
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = file.name.replace(".dwg", ".dxf");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(downloadUrl);
 
     const { dxfContent, error } = await response.json();
 
