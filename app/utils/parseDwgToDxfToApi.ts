@@ -1,5 +1,6 @@
 import { ChangeEvent } from "react";
 import DxfParser from "dxf-parser";
+import { convertStarToSvg } from "./convertDxfToSvg";
 
 export const parseDwgToDxfToApi = async (e: ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files?.[0];
@@ -45,8 +46,8 @@ export const parseDwgToDxfToApi = async (e: ChangeEvent<HTMLInputElement>) => {
 
       if (!dxfObject) throw new Error("dxf 데이터가 없음");
 
-      const layers = dxfObject.tables.layer.layers;
-      console.log("레이어: ", Object.keys(layers));
+      const svgContent = convertStarToSvg(dxfObject);
+      console.log(svgContent);
       return dxfObject;
     } catch (parseError) {
       console.error("dxf 파싱 오류", parseError);
