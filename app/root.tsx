@@ -1,5 +1,12 @@
-import { Links, Meta, Outlet, Scripts } from "@remix-run/react";
+import { Links, Meta, MetaFunction, Outlet, Scripts } from "@remix-run/react";
 import "./styles/globals.css";
+
+export const meta: MetaFunction = () => {
+  return [
+    { charSet: "utf-8" },
+    { name: "viewport", content: "width=device-width,initial-scale=1" },
+  ];
+};
 
 export default function App() {
   return (
