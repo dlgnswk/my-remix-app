@@ -5,8 +5,10 @@ export const Header = () => {
     <header className="border-b w-full">
       <div className="flex items-center justify-between h-14 px-4">
         <h1 className="text-xl font-semibold">Blogging</h1>
-
-        <Button variant="outline">save</Button>
+        <div className="flex gap-2">
+          <Button variant="outline">save</Button>
+          <Button>submit</Button>
+        </div>
       </div>
     </header>
   );

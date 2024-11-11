@@ -7,10 +7,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { TextCard } from "./TextCard";
 
 export const InnerSideBar = () => {
   return (
-    <div className="w-[300px] p-4 flex flex-col gap-6">
+    <div className="w-[400px] p-4 flex flex-col gap-6">
       <div>
         <h3 className="mb-2 text-sm font-medium">Layout</h3>
         <Select defaultValue="HTML">
@@ -37,6 +38,7 @@ export const InnerSideBar = () => {
           </Button>
         </div>
       </div>
+      <TextCard />
     </div>
   );
 };
