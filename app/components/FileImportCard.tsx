@@ -10,9 +10,9 @@ import { Label } from "~/components/ui/label";
 
 import { handleFileChange } from "~/utils/handleFileChange";
 
-export default function FileImportCard() {
+export const FileImportCard = () => {
   return (
-    <Card className="w-[380px] text-left m-auto">
+    <Card className="w-full text-left">
       <CardHeader>
         <CardTitle>DWG to DXF Converter</CardTitle>
         <CardDescription>
@@ -25,4 +25,4 @@ export default function FileImportCard() {
       </CardContent>
     </Card>
   );
-}
+};

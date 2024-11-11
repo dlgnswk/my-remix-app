@@ -1,7 +1,7 @@
 import { json } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 
-import Header from "~/components/Header";
+import { Header } from "~/components/Header";
 
 interface LoaderData {
   data: string;
@@ -15,7 +15,7 @@ export default function Layout() {
   const { data } = useLoaderData<typeof loader>();
 
   return (
-    <div className="w-full text-center my-10">
+    <div className="w-[380px] flex flex-col justify-center gap-5 text-center m-auto mt-10">
       <Header message={data} />
       <Outlet />
     </div>
